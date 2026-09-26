@@ -1,0 +1,6 @@
+class: Event
+table: event
+fields:
+  name: String
+  date: DateTime
+  archived: bool, default=false

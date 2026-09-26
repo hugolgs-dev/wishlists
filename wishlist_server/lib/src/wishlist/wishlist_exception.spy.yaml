@@ -1,0 +1,3 @@
+exception: WishlistException
+fields:
+  message: String

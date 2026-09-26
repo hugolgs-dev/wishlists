@@ -1,0 +1,29 @@
+class: Item
+table: item
+serverOnly: true
+fields:
+  eventId: int, relation(parent=event)
+  ### Who the gift is for.
+  ownerId: UuidValue, relation(parent=serverpod_auth_core_user, onDelete=Cascade)
+  ### Who created it. Different from ownerId means a secret idea.
+  createdById: UuidValue, relation(parent=serverpod_auth_core_user, onDelete=Cascade)
+  title: String
+  notes: String?
+  url: String?
+  priceCents: int?
+  ### 1 = high, 3 = low.
+  priority: int, default=2
+  quantity: int, default=1
+  isGroupGift: bool, default=false
+  organizerId: UuidValue?, relation(parent=serverpod_auth_core_user, onDelete=SetNull)
+  imageUrl: String?
+  previewTitle: String?
+  previewFetchedAt: DateTime?
+  receivedAt: DateTime?
+  createdAt: DateTime, default=now
+  ### Only bump on meaningful edits (drives "changed since you claimed it").
+  updatedAt: DateTime, default=now
+  deletedAt: DateTime?
+indexes:
+  item_event_owner_idx:
+    fields: eventId, ownerId

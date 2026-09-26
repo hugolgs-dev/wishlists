@@ -1,0 +1,5 @@
+class: ClaimInfo
+fields:
+  claimerId: UuidValue
+  claimerName: String
+  quantity: int

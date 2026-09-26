@@ -1,0 +1,9 @@
+class: WishItem
+fields:
+  id: int?
+  title: String
+  notes: String?
+  url: String?
+  priceCents: int?
+  priority: int, default=2
+  quantity: int, default=1

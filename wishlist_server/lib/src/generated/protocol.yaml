@@ -1,0 +1,24 @@
+emailIdp:
+  - startRegistration:
+  - login:
+  - verifyRegistrationCode:
+  - finishRegistration:
+  - startPasswordReset:
+  - verifyPasswordResetCode:
+  - finishPasswordReset:
+  - hasAccount:
+jwtRefresh:
+  - refreshAccessToken:
+claims:
+  - claim:
+  - unclaim:
+  - mine:
+  - setPurchased:
+family:
+  - members:
+  - list:
+myWishlist:
+  - list:
+  - add:
+  - update:
+  - remove:

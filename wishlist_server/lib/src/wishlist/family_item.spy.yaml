@@ -1,0 +1,21 @@
+### An item on SOMEONE ELSE's list, with its claims.
+### Never built for the item's owner (see visibility.dart).
+class: FamilyItem
+fields:
+  id: int
+  ownerId: UuidValue
+  ownerName: String
+  title: String
+  notes: String?
+  url: String?
+  priceCents: int?
+  priority: int
+  quantity: int
+  claims: List<ClaimInfo>
+  ### The owner deleted it after the caller claimed it.
+  removed: bool
+  ### The owner edited it after the caller claimed it.
+  changedSinceMyClaim: bool
+  ### The caller's own claim (0 = not claimed).
+  myQuantity: int
+  myPurchased: bool

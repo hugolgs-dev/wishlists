@@ -1,0 +1,4 @@
+class: Member
+fields:
+  userId: UuidValue
+  name: String
