@@ -22,3 +22,6 @@ myWishlist:
   - add:
   - update:
   - remove:
+profile:
+  - getName:
+  - setName:

@@ -22,6 +22,7 @@ import '../auth/jwt_refresh_endpoint.dart' as _inwq3ztq;
 import '../wishlist/claims_endpoint.dart' as _io9w7yp9;
 import '../wishlist/family_endpoint.dart' as _it7vyow1;
 import '../wishlist/my_wishlist_endpoint.dart' as _iznp1sn0;
+import '../wishlist/profile_endpoint.dart' as _iu1vqi2l;
 
 class Endpoints extends _is.EndpointDispatch {
   @override
@@ -55,6 +56,12 @@ class Endpoints extends _is.EndpointDispatch {
         ..initialize(
           server,
           'myWishlist',
+          null,
+        ),
+      'profile': _iu1vqi2l.ProfileEndpoint()
+        ..initialize(
+          server,
+          'profile',
           null,
         ),
     };
@@ -457,6 +464,41 @@ class Endpoints extends _is.EndpointDispatch {
                         session,
                         params['id'],
                       ),
+        ),
+      },
+    );
+    connectors['profile'] = _is.EndpointConnector(
+      name: 'profile',
+      endpoint: endpoints['profile']!,
+      methodConnectors: {
+        'getName': _is.MethodConnector(
+          name: 'getName',
+          params: {},
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['profile'] as _iu1vqi2l.ProfileEndpoint)
+                  .getName(session),
+        ),
+        'setName': _is.MethodConnector(
+          name: 'setName',
+          params: {
+            'name': _is.ParameterDescription(
+              name: 'name',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['profile'] as _iu1vqi2l.ProfileEndpoint).setName(
+                    session,
+                    params['name'],
+                  ),
         ),
       },
     );

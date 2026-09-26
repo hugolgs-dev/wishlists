@@ -356,6 +356,28 @@ class EndpointMyWishlist extends _isc.EndpointRef {
   );
 }
 
+/// The caller's first name, shown to the family. Accessed as `client.profile`.
+/// {@category Endpoint}
+class EndpointProfile extends _isc.EndpointRef {
+  EndpointProfile(_isc.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'profile';
+
+  /// The caller's first name, or null if not chosen yet.
+  _ida.Future<String?> getName() => caller.callServerEndpoint<String?>(
+    'profile',
+    'getName',
+    {},
+  );
+
+  _ida.Future<void> setName(String name) => caller.callServerEndpoint<void>(
+    'profile',
+    'setName',
+    {'name': name},
+  );
+}
+
 class Modules {
   Modules(Client client) {
     serverpod_auth_idp = _iaic.Caller(client);
@@ -399,6 +421,7 @@ class Client extends _isc.ServerpodClientShared {
     claims = EndpointClaims(this);
     family = EndpointFamily(this);
     myWishlist = EndpointMyWishlist(this);
+    profile = EndpointProfile(this);
     modules = Modules(this);
   }
 
@@ -412,6 +435,8 @@ class Client extends _isc.ServerpodClientShared {
 
   late final EndpointMyWishlist myWishlist;
 
+  late final EndpointProfile profile;
+
   late final Modules modules;
 
   @override
@@ -421,6 +446,7 @@ class Client extends _isc.ServerpodClientShared {
     'claims': claims,
     'family': family,
     'myWishlist': myWishlist,
+    'profile': profile,
   };
 
   @override

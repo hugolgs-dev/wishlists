@@ -66,7 +66,7 @@ Future<List<FamilyItem>> toFamilyItems(
 
 /// Name shown for a user: full name, then nickname, then email.
 String displayName(UserProfile p) =>
-    p.fullName ?? p.userName ?? p.email ?? "Quelqu'un";
+    p.userName ?? p.fullName ?? p.email ?? "Quelqu'un";
 
 FamilyItem _toFamilyItem(
   Item item,
