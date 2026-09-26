@@ -52,14 +52,19 @@ class _SignInScreenState extends State<SignInScreen> {
               passwordRequirementTexts: _passwordTextsFr,
               child: SignInWidget(
                 client: client,
-                onAuthenticated: () {},
-                onError: (error) {
-                  context.showSnackBar(
-                    message: _frenchError(error),
-                    backgroundColor: colors.errorContainer,
-                    foregroundColor: colors.onErrorContainer,
-                  );
-                },
+                emailSignInWidget: EmailSignInWidget(
+                  client: client,
+                  // Family members are invited: most visits are logins.
+                  startScreen: EmailFlowScreen.login,
+                  onAuthenticated: () {},
+                  onError: (error) {
+                    context.showSnackBar(
+                      message: _frenchError(error),
+                      backgroundColor: colors.errorContainer,
+                      foregroundColor: colors.onErrorContainer,
+                    );
+                  },
+                ),
               ),
             ),
           );
