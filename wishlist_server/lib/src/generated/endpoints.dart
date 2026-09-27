@@ -300,6 +300,50 @@ class Endpoints extends _is.EndpointDispatch {
                     params['quantity'],
                   ),
         ),
+        'setPurchased': _is.MethodConnector(
+          name: 'setPurchased',
+          params: {
+            'itemId': _is.ParameterDescription(
+              name: 'itemId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'purchased': _is.ParameterDescription(
+              name: 'purchased',
+              type: _is.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['claims'] as _io9w7yp9.ClaimsEndpoint)
+                  .setPurchased(
+                    session,
+                    params['itemId'],
+                    params['purchased'],
+                  ),
+        ),
+        'markSeen': _is.MethodConnector(
+          name: 'markSeen',
+          params: {
+            'itemId': _is.ParameterDescription(
+              name: 'itemId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['claims'] as _io9w7yp9.ClaimsEndpoint).markSeen(
+                    session,
+                    params['itemId'],
+                  ),
+        ),
         'unclaim': _is.MethodConnector(
           name: 'unclaim',
           params: {
@@ -329,31 +373,6 @@ class Endpoints extends _is.EndpointDispatch {
               ) async => (endpoints['claims'] as _io9w7yp9.ClaimsEndpoint).mine(
                 session,
               ),
-        ),
-        'setPurchased': _is.MethodConnector(
-          name: 'setPurchased',
-          params: {
-            'itemId': _is.ParameterDescription(
-              name: 'itemId',
-              type: _is.getType<int>(),
-              nullable: false,
-            ),
-            'purchased': _is.ParameterDescription(
-              name: 'purchased',
-              type: _is.getType<bool>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _is.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['claims'] as _io9w7yp9.ClaimsEndpoint)
-                  .setPurchased(
-                    session,
-                    params['itemId'],
-                    params['purchased'],
-                  ),
         ),
       },
     );

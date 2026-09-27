@@ -11,9 +11,10 @@ jwtRefresh:
   - refreshAccessToken:
 claims:
   - claim:
+  - setPurchased:
+  - markSeen:
   - unclaim:
   - mine:
-  - setPurchased:
 family:
   - members:
   - list:

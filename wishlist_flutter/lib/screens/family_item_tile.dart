@@ -20,6 +20,7 @@ class FamilyItemTile extends StatelessWidget {
     required this.item,
     this.trailing,
     this.showOwner = false,
+    this.onSeen,
   });
 
   final FamilyItem item;
@@ -27,7 +28,7 @@ class FamilyItemTile extends StatelessWidget {
 
   /// True on the shopping list, where items from several people are mixed.
   final bool showOwner;
-
+  final VoidCallback? onSeen;
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -61,9 +62,17 @@ class FamilyItemTile extends StatelessWidget {
           if (item.removed)
             Text('Removed by owner', style: TextStyle(color: colors.error)),
           if (!item.removed && item.changedSinceMyClaim)
-            Text(
-              'Changed since you claimed it',
-              style: TextStyle(color: colors.tertiary),
+            Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    'Modifié depuis votre réservation',
+                    style: TextStyle(color: colors.tertiary),
+                  ),
+                ),
+                if (onSeen != null)
+                  TextButton(onPressed: onSeen, child: const Text('Vu')),
+              ],
             ),
         ],
       ),

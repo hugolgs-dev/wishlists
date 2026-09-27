@@ -21,9 +21,11 @@ abstract class Claim implements _is.TableRow<int?>, _is.ProtocolSerialization {
     this.contributionCents,
     bool? purchased,
     DateTime? createdAt,
+    DateTime? seenAt,
   }) : quantity = quantity ?? 1,
        purchased = purchased ?? false,
-       createdAt = createdAt ?? DateTime.now();
+       createdAt = createdAt ?? DateTime.now(),
+       seenAt = seenAt ?? DateTime.now();
 
   factory Claim({
     int? id,
@@ -33,6 +35,7 @@ abstract class Claim implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? contributionCents,
     bool? purchased,
     DateTime? createdAt,
+    DateTime? seenAt,
   }) = _ClaimImpl;
 
   factory Claim.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -50,6 +53,9 @@ abstract class Claim implements _is.TableRow<int?>, _is.ProtocolSerialization {
       createdAt: jsonSerialization['createdAt'] == null
           ? null
           : _is.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      seenAt: jsonSerialization['seenAt'] == null
+          ? null
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['seenAt']),
     );
   }
 
@@ -72,6 +78,8 @@ abstract class Claim implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
   DateTime createdAt;
 
+  DateTime seenAt;
+
   @override
   _is.Table<int?> get table => t;
 
@@ -86,6 +94,7 @@ abstract class Claim implements _is.TableRow<int?>, _is.ProtocolSerialization {
     int? contributionCents,
     bool? purchased,
     DateTime? createdAt,
+    DateTime? seenAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -98,6 +107,7 @@ abstract class Claim implements _is.TableRow<int?>, _is.ProtocolSerialization {
       if (contributionCents != null) 'contributionCents': contributionCents,
       'purchased': purchased,
       'createdAt': createdAt.toJson(),
+      'seenAt': seenAt.toJson(),
     };
   }
 
@@ -145,6 +155,7 @@ class _ClaimImpl extends Claim {
     int? contributionCents,
     bool? purchased,
     DateTime? createdAt,
+    DateTime? seenAt,
   }) : super._(
          id: id,
          itemId: itemId,
@@ -153,6 +164,7 @@ class _ClaimImpl extends Claim {
          contributionCents: contributionCents,
          purchased: purchased,
          createdAt: createdAt,
+         seenAt: seenAt,
        );
 
   /// Returns a shallow copy of this [Claim]
@@ -167,6 +179,7 @@ class _ClaimImpl extends Claim {
     Object? contributionCents = _Undefined,
     bool? purchased,
     DateTime? createdAt,
+    DateTime? seenAt,
   }) {
     return Claim(
       id: id is int? ? id : this.id,
@@ -178,6 +191,7 @@ class _ClaimImpl extends Claim {
           : this.contributionCents,
       purchased: purchased ?? this.purchased,
       createdAt: createdAt ?? this.createdAt,
+      seenAt: seenAt ?? this.seenAt,
     );
   }
 }
@@ -217,6 +231,11 @@ class ClaimUpdateTable extends _is.UpdateTable<ClaimTable> {
         table.createdAt,
         value,
       );
+
+  _is.ColumnValue<DateTime, DateTime> seenAt(DateTime value) => _is.ColumnValue(
+    table.seenAt,
+    value,
+  );
 }
 
 class ClaimTable extends _is.Table<int?> {
@@ -249,6 +268,11 @@ class ClaimTable extends _is.Table<int?> {
       this,
       hasDefault: true,
     );
+    seenAt = _is.ColumnDateTime(
+      'seenAt',
+      this,
+      hasDefault: true,
+    );
   }
 
   late final ClaimUpdateTable updateTable;
@@ -265,6 +289,8 @@ class ClaimTable extends _is.Table<int?> {
 
   late final _is.ColumnDateTime createdAt;
 
+  late final _is.ColumnDateTime seenAt;
+
   @override
   List<_is.Column> get columns => [
     id,
@@ -274,6 +300,7 @@ class ClaimTable extends _is.Table<int?> {
     contributionCents,
     purchased,
     createdAt,
+    seenAt,
   ];
 }
 

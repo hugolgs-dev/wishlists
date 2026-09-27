@@ -45,6 +45,13 @@ class _MyClaimsScreenState extends State<MyClaimsScreen> {
     }
   }
 
+  Future<void> _markSeen(FamilyItem item) async {
+    if (await runAction(context, () => client.claims.markSeen(item.id)) &&
+        mounted) {
+      _reload();
+    }
+  }
+
   Widget _action(FamilyItem item) {
     // Deleted by its owner: nothing to buy, just let the user clear it.
     if (item.removed) {
@@ -72,6 +79,7 @@ class _MyClaimsScreenState extends State<MyClaimsScreen> {
         item: item,
         showOwner: true, // "Pour Maman · 19,99 €"
         trailing: _action(item),
+        onSeen: () => _markSeen(item),
       ),
     );
   }

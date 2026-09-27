@@ -107,6 +107,27 @@ void main() {
       },
     );
 
+    test('when claimer marks it seen then the warning goes away', () async {
+      final alice = await newUser(sessionBuilder);
+      final bob = await newUser(sessionBuilder);
+      final item = await endpoints.myWishlist.add(
+        alice,
+        WishItem(title: 'Scarf'),
+      );
+      await endpoints.claims.claim(bob, item.id!, 1);
+      await endpoints.myWishlist.update(
+        alice,
+        item.copyWith(title: 'Red scarf'),
+      );
+
+      await endpoints.claims.markSeen(bob, item.id!);
+
+      expect(
+        (await endpoints.claims.mine(bob)).single.changedSinceMyClaim,
+        isFalse,
+      );
+    });
+
     test('when marking purchased then shopping list shows it', () async {
       final alice = await newUser(sessionBuilder);
       final bob = await newUser(sessionBuilder);

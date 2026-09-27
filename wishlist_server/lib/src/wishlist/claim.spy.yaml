@@ -8,6 +8,7 @@ fields:
   contributionCents: int?
   purchased: bool, default=false
   createdAt: DateTime, default=now
+  seenAt: DateTime, default=now
 indexes:
   claim_item_claimer_idx:
     fields: itemId, claimerId

@@ -94,8 +94,8 @@ FamilyItem _toFamilyItem(
         ),
     ],
     removed: item.deletedAt != null,
-    // ROADMAP: items.updated_at > claims.created_at.
-    changedSinceMyClaim: mine != null && item.updatedAt.isAfter(mine.createdAt),
+    // ROADMAP: warn when the owner edited after the claimer last looked.
+    changedSinceMyClaim: mine != null && item.updatedAt.isAfter(mine.seenAt),
     myQuantity: mine?.quantity ?? 0,
     myPurchased: mine?.purchased ?? false,
   );

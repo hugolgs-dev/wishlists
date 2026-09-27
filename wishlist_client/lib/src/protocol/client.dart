@@ -262,6 +262,26 @@ class EndpointClaims extends _isc.EndpointRef {
     },
   );
 
+  /// Ticks or unticks "bought" on the caller's claim.
+  _ida.Future<void> setPurchased(
+    int itemId,
+    bool purchased,
+  ) => caller.callServerEndpoint<void>(
+    'claims',
+    'setPurchased',
+    {
+      'itemId': itemId,
+      'purchased': purchased,
+    },
+  );
+
+  /// "Vu": the caller acknowledges the owner's latest edits.
+  _ida.Future<void> markSeen(int itemId) => caller.callServerEndpoint<void>(
+    'claims',
+    'markSeen',
+    {'itemId': itemId},
+  );
+
   /// Drops the caller's claim. Allowed on removed items too.
   _ida.Future<void> unclaim(int itemId) => caller.callServerEndpoint<void>(
     'claims',
@@ -276,19 +296,6 @@ class EndpointClaims extends _isc.EndpointRef {
         'mine',
         {},
       );
-
-  /// Ticks or unticks "bought" on the caller's claim.
-  _ida.Future<void> setPurchased(
-    int itemId,
-    bool purchased,
-  ) => caller.callServerEndpoint<void>(
-    'claims',
-    'setPurchased',
-    {
-      'itemId': itemId,
-      'purchased': purchased,
-    },
-  );
 }
 
 /// Other family members and their lists. Accessed as `client.family`.

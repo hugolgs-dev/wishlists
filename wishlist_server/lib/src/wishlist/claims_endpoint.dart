@@ -58,11 +58,35 @@ class ClaimsEndpoint extends Endpoint {
       } else {
         await Claim.db.updateRow(
           session,
-          existing.copyWith(quantity: quantity),
+          existing.copyWith(quantity: quantity, seenAt: DateTime.now()),
           transaction: tx,
         );
       }
     });
+  }
+
+  /// Ticks or unticks "bought" on the caller's claim.
+  Future<void> setPurchased(Session session, int itemId, bool purchased) async {
+    final claim = await _myClaim(session, itemId);
+    await Claim.db.updateRow(session, claim.copyWith(purchased: purchased));
+  }
+
+  /// "Vu": the caller acknowledges the owner's latest edits.
+  Future<void> markSeen(Session session, int itemId) async {
+    final claim = await _myClaim(session, itemId);
+    await Claim.db.updateRow(session, claim.copyWith(seenAt: DateTime.now()));
+  }
+
+  Future<Claim> _myClaim(Session session, int itemId) async {
+    final me = session.authenticated!.authUserId;
+    final claim = await Claim.db.findFirstRow(
+      session,
+      where: (t) => t.itemId.equals(itemId) & t.claimerId.equals(me),
+    );
+    if (claim == null) {
+      throw WishlistException(message: 'Achat introuvable');
+    }
+    return claim;
   }
 
   /// Drops the caller's claim. Allowed on removed items too.
@@ -88,16 +112,5 @@ class ClaimsEndpoint extends Endpoint {
       where: (t) => t.id.inSet(<int>{for (final c in claims) c.itemId}),
     );
     return toFamilyItems(session, items, me);
-  }
-
-  /// Ticks or unticks "bought" on the caller's claim.
-  Future<void> setPurchased(Session session, int itemId, bool purchased) async {
-    final me = session.authenticated!.authUserId;
-    final claim = await Claim.db.findFirstRow(
-      session,
-      where: (t) => t.itemId.equals(itemId) & t.claimerId.equals(me),
-    );
-    if (claim == null) throw WishlistException(message: 'Achat introuvable');
-    await Claim.db.updateRow(session, claim.copyWith(purchased: purchased));
   }
 }

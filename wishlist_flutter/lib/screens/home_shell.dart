@@ -98,7 +98,8 @@ class _HomeShellState extends State<HomeShell> {
 
   /// Shows the dialog until a name is saved, or it is cancelled (if allowed).
   Future<void> _askName({String? initial, required bool canCancel}) async {
-    while (mounted) {
+    while (true) {
+      if (!mounted) return;
       final name = await showNameDialog(
         context,
         initial: initial,

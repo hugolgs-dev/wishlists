@@ -43,6 +43,13 @@ class _PersonListScreenState extends State<PersonListScreen> {
     }
   }
 
+  Future<void> _markSeen(FamilyItem item) async {
+    if (await runAction(context, () => client.claims.markSeen(item.id)) &&
+        mounted) {
+      _reload();
+    }
+  }
+
   Future<int?> _askQuantity(int max) => showDialog<int>(
     context: context,
     builder: (context) => SimpleDialog(
@@ -79,8 +86,11 @@ class _PersonListScreenState extends State<PersonListScreen> {
         future: _items,
         onRetry: _reload,
         emptyText: "${widget.member.name} n'a encore rien ajouté.",
-        itemBuilder: (item) =>
-            FamilyItemTile(item: item, trailing: _action(item)),
+        itemBuilder: (item) => FamilyItemTile(
+          item: item,
+          onSeen: () => _markSeen(item),
+          trailing: _action(item),
+        ),
       ),
     );
   }

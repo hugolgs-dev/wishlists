@@ -100,6 +100,13 @@ class Protocol extends _is.DatabaseSerializationManager {
           dartType: 'DateTime',
           columnDefault: 'now',
         ),
+        _isp.ColumnDefinition(
+          name: 'seenAt',
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+          columnDefault: 'now',
+        ),
       ],
       foreignKeys: [
         _isp.ForeignKeyDefinition(
