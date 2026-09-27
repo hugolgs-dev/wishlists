@@ -7,8 +7,9 @@ import 'family_screen.dart';
 import 'my_claims_screen.dart';
 import '../async_ui.dart';
 import 'name_dialog.dart';
+import '../theme_mode.dart';
 
-enum _MenuAction { changeName, signOut }
+enum _MenuAction { changeName, theme, signOut }
 
 /// The signed-in app: three tabs at the bottom, sign-out at the top.
 class HomeShell extends StatefulWidget {
@@ -20,6 +21,28 @@ class HomeShell extends StatefulWidget {
 
 class _HomeShellState extends State<HomeShell> {
   var _tab = 0;
+
+  /// Bumping this rebuilds the current tab from scratch, which reloads it.
+  var _refreshCount = 0;
+  late final AppLifecycleListener _lifecycle;
+
+  void _refresh() => setState(() => _refreshCount++);
+
+  @override
+  void initState() {
+    super.initState();
+    // Coming back to the app (other tab, phone unlocked...): other people may
+    // have changed things meanwhile.
+    _lifecycle = AppLifecycleListener(onResume: _refresh);
+    _askNameIfMissing();
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
+
   static const _titles = ['Mes idées', 'Famille', 'Mes achats'];
 
   @override
@@ -28,10 +51,15 @@ class _HomeShellState extends State<HomeShell> {
       appBar: AppBar(
         title: Text(_titles[_tab]),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Actualiser',
+            onPressed: _refresh,
+          ),
           PopupMenuButton<_MenuAction>(
             onSelected: (action) => switch (action) {
               _MenuAction.changeName => _changeName(),
-              // SignInScreen listens to auth changes and shows the sign-in form.
+              _MenuAction.theme => _pickTheme(),
               _MenuAction.signOut => client.auth.signOutDevice(),
             },
             itemBuilder: (context) => const [
@@ -39,6 +67,7 @@ class _HomeShellState extends State<HomeShell> {
                 value: _MenuAction.changeName,
                 child: Text('Changer mon prénom'),
               ),
+              PopupMenuItem(value: _MenuAction.theme, child: Text('Thème')),
               PopupMenuItem(
                 value: _MenuAction.signOut,
                 child: Text('Se déconnecter'),
@@ -47,11 +76,14 @@ class _HomeShellState extends State<HomeShell> {
           ),
         ],
       ),
-      body: switch (_tab) {
-        0 => const MyWishlistScreen(),
-        1 => const FamilyScreen(),
-        _ => const MyClaimsScreen(),
-      },
+      body: KeyedSubtree(
+        key: ValueKey(_refreshCount),
+        child: switch (_tab) {
+          0 => const MyWishlistScreen(),
+          1 => const FamilyScreen(),
+          _ => const MyClaimsScreen(),
+        },
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tab,
         onDestinationSelected: (i) => setState(() => _tab = i),
@@ -68,12 +100,6 @@ class _HomeShellState extends State<HomeShell> {
         ],
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _askNameIfMissing();
   }
 
   Future<void> _askNameIfMissing() async {
@@ -108,5 +134,35 @@ class _HomeShellState extends State<HomeShell> {
       if (name == null || !mounted) return;
       if (await runAction(context, () => client.profile.setName(name))) return;
     }
+  }
+
+  Future<void> _pickTheme() async {
+    final picked = await showDialog<ThemeMode>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Thème'),
+        children: [
+          // A record (mode, label) per option, destructured in the loop.
+          for (final (mode, label) in const [
+            (ThemeMode.system, 'Automatique (comme le téléphone)'),
+            (ThemeMode.light, 'Clair'),
+            (ThemeMode.dark, 'Sombre'),
+          ])
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, mode),
+              child: Row(
+                children: [
+                  // Icon(null) is an empty slot of the same size, so the
+                  // labels stay aligned whether or not they're checked.
+                  Icon(mode == themeMode.value ? Icons.check : null),
+                  const SizedBox(width: 12),
+                  Text(label),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+    if (picked != null) await saveThemeMode(picked);
   }
 }

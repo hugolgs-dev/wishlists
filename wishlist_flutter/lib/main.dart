@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'client.dart';
+import 'theme_mode.dart';
 import 'screens/home_shell.dart';
 import 'screens/sign_in_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeClient();
+  await loadThemeMode(); // before runApp, so the first frame has the right theme
   runApp(const WishlistApp());
 }
 
@@ -23,17 +25,20 @@ class WishlistApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Liste de Noël',
-      locale: const Locale('fr'),
-      supportedLocales: const [Locale('fr')],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      theme: _buildTheme(Brightness.light),
-      darkTheme: _buildTheme(Brightness.dark),
-      themeMode: ThemeMode.system,
-      // SignInScreen shows the sign-in form until the user is signed in,
-      // then its child. Signing out switches back automatically.
-      home: const Scaffold(body: SignInScreen(child: HomeShell())),
+    return ValueListenableBuilder(
+      valueListenable: themeMode,
+      builder: (context, mode, _) => MaterialApp(
+        title: 'Liste de Noël',
+        locale: const Locale('fr'),
+        supportedLocales: const [Locale('fr')],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        theme: _buildTheme(Brightness.light),
+        darkTheme: _buildTheme(Brightness.dark),
+        themeMode: mode,
+        // SignInScreen shows the sign-in form until the user is signed in,
+        // then its child. Signing out switches back automatically.
+        home: const Scaffold(body: SignInScreen(child: HomeShell())),
+      ),
     );
   }
 }

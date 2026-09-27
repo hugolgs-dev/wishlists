@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wishlist_client/wishlist_client.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import '../client.dart';
 import '../money.dart';
 import '../async_ui.dart';
@@ -81,10 +81,21 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
           title: Text(item.title),
           subtitle: _details(item),
           onTap: () => _edit(item),
-          trailing: IconButton(
-            icon: const Icon(Icons.delete_outline),
-            tooltip: 'Remove',
-            onPressed: () => _remove(item),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min, // take only the buttons' width
+            children: [
+              if (item.url != null)
+                IconButton(
+                  icon: const Icon(Icons.open_in_new),
+                  tooltip: 'Ouvrir le lien',
+                  onPressed: () => launchUrl(Uri.parse(item.url!)),
+                ),
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                tooltip: 'Supprimer',
+                onPressed: () => _remove(item),
+              ),
+            ],
           ),
         ),
       ),
