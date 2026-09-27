@@ -22,6 +22,7 @@ abstract class WishItem
     this.priceCents,
     int? priority,
     int? quantity,
+    this.imageUrl,
   }) : priority = priority ?? 2,
        quantity = quantity ?? 1;
 
@@ -33,6 +34,7 @@ abstract class WishItem
     int? priceCents,
     int? priority,
     int? quantity,
+    String? imageUrl,
   }) = _WishItemImpl;
 
   factory WishItem.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -44,6 +46,7 @@ abstract class WishItem
       priceCents: jsonSerialization['priceCents'] as int?,
       priority: jsonSerialization['priority'] as int?,
       quantity: jsonSerialization['quantity'] as int?,
+      imageUrl: jsonSerialization['imageUrl'] as String?,
     );
   }
 
@@ -61,6 +64,9 @@ abstract class WishItem
 
   int quantity;
 
+  /// Set by the server. Ignored when the app sends it back.
+  String? imageUrl;
+
   /// Returns a shallow copy of this [WishItem]
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
@@ -72,6 +78,7 @@ abstract class WishItem
     int? priceCents,
     int? priority,
     int? quantity,
+    String? imageUrl,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -84,6 +91,7 @@ abstract class WishItem
       if (priceCents != null) 'priceCents': priceCents,
       'priority': priority,
       'quantity': quantity,
+      if (imageUrl != null) 'imageUrl': imageUrl,
     };
   }
 
@@ -98,6 +106,7 @@ abstract class WishItem
       if (priceCents != null) 'priceCents': priceCents,
       'priority': priority,
       'quantity': quantity,
+      if (imageUrl != null) 'imageUrl': imageUrl,
     };
   }
 
@@ -118,6 +127,7 @@ class _WishItemImpl extends WishItem {
     int? priceCents,
     int? priority,
     int? quantity,
+    String? imageUrl,
   }) : super._(
          id: id,
          title: title,
@@ -126,6 +136,7 @@ class _WishItemImpl extends WishItem {
          priceCents: priceCents,
          priority: priority,
          quantity: quantity,
+         imageUrl: imageUrl,
        );
 
   /// Returns a shallow copy of this [WishItem]
@@ -140,6 +151,7 @@ class _WishItemImpl extends WishItem {
     Object? priceCents = _Undefined,
     int? priority,
     int? quantity,
+    Object? imageUrl = _Undefined,
   }) {
     return WishItem(
       id: id is int? ? id : this.id,
@@ -149,6 +161,7 @@ class _WishItemImpl extends WishItem {
       priceCents: priceCents is int? ? priceCents : this.priceCents,
       priority: priority ?? this.priority,
       quantity: quantity ?? this.quantity,
+      imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
     );
   }
 }

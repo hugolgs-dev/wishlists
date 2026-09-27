@@ -28,6 +28,7 @@ abstract class FamilyItem
     this.priceCents,
     required this.priority,
     required this.quantity,
+    this.imageUrl,
     required this.claims,
     required this.removed,
     required this.changedSinceMyClaim,
@@ -45,6 +46,7 @@ abstract class FamilyItem
     int? priceCents,
     required int priority,
     required int quantity,
+    String? imageUrl,
     required List<_inw3ncuz.ClaimInfo> claims,
     required bool removed,
     required bool changedSinceMyClaim,
@@ -65,6 +67,7 @@ abstract class FamilyItem
       priceCents: jsonSerialization['priceCents'] as int?,
       priority: jsonSerialization['priority'] as int,
       quantity: jsonSerialization['quantity'] as int,
+      imageUrl: jsonSerialization['imageUrl'] as String?,
       claims: _im30wwmx.Protocol().deserialize<List<_inw3ncuz.ClaimInfo>>(
         jsonSerialization['claims'],
       ),
@@ -97,6 +100,9 @@ abstract class FamilyItem
 
   int quantity;
 
+  /// Set by the server.
+  String? imageUrl;
+
   List<_inw3ncuz.ClaimInfo> claims;
 
   /// The owner deleted it after the caller claimed it.
@@ -123,6 +129,7 @@ abstract class FamilyItem
     int? priceCents,
     int? priority,
     int? quantity,
+    String? imageUrl,
     List<_inw3ncuz.ClaimInfo>? claims,
     bool? removed,
     bool? changedSinceMyClaim,
@@ -142,6 +149,7 @@ abstract class FamilyItem
       if (priceCents != null) 'priceCents': priceCents,
       'priority': priority,
       'quantity': quantity,
+      if (imageUrl != null) 'imageUrl': imageUrl,
       'claims': claims.toJson(valueToJson: (v) => v.toJson()),
       'removed': removed,
       'changedSinceMyClaim': changedSinceMyClaim,
@@ -163,6 +171,7 @@ abstract class FamilyItem
       if (priceCents != null) 'priceCents': priceCents,
       'priority': priority,
       'quantity': quantity,
+      if (imageUrl != null) 'imageUrl': imageUrl,
       'claims': claims.toJson(valueToJson: (v) => v.toJsonForProtocol()),
       'removed': removed,
       'changedSinceMyClaim': changedSinceMyClaim,
@@ -190,6 +199,7 @@ class _FamilyItemImpl extends FamilyItem {
     int? priceCents,
     required int priority,
     required int quantity,
+    String? imageUrl,
     required List<_inw3ncuz.ClaimInfo> claims,
     required bool removed,
     required bool changedSinceMyClaim,
@@ -205,6 +215,7 @@ class _FamilyItemImpl extends FamilyItem {
          priceCents: priceCents,
          priority: priority,
          quantity: quantity,
+         imageUrl: imageUrl,
          claims: claims,
          removed: removed,
          changedSinceMyClaim: changedSinceMyClaim,
@@ -226,6 +237,7 @@ class _FamilyItemImpl extends FamilyItem {
     Object? priceCents = _Undefined,
     int? priority,
     int? quantity,
+    Object? imageUrl = _Undefined,
     List<_inw3ncuz.ClaimInfo>? claims,
     bool? removed,
     bool? changedSinceMyClaim,
@@ -242,6 +254,7 @@ class _FamilyItemImpl extends FamilyItem {
       priceCents: priceCents is int? ? priceCents : this.priceCents,
       priority: priority ?? this.priority,
       quantity: quantity ?? this.quantity,
+      imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
       claims: claims ?? this.claims.map((e0) => e0.copyWith()).toList(),
       removed: removed ?? this.removed,
       changedSinceMyClaim: changedSinceMyClaim ?? this.changedSinceMyClaim,

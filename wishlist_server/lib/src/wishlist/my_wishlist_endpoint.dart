@@ -29,6 +29,9 @@ import 'package:serverpod_auth_idp_server/core.dart';
 // NEVER edit generated code; it is rewritten on each generation.
 import '../generated/protocol.dart';
 
+// Item pictures: storage id, size limit, path and URL helpers.
+import 'images.dart';
+
 // The single visibility rule (ownListFilter). Kept in its own file so every
 // endpoint uses the same rule instead of re-implementing it.
 import 'visibility.dart';
@@ -92,7 +95,8 @@ class MyWishlistEndpoint extends Endpoint {
 
     // Convert each database row (Item) into the shape sent to the app
     // (WishItem). Everything that leaves the server goes through _toWishItem.
-    return items.map(_toWishItem).toList();
+    // Future.wait runs the conversions together and waits for all of them.
+    return Future.wait(items.map((item) => _toWishItem(session, item)));
   }
 
   /// Creates a new item on the caller's list.
@@ -133,7 +137,7 @@ class MyWishlistEndpoint extends Endpoint {
 
     // insertRow returns the saved row, now with its database-assigned `id`.
     // The app needs that id to edit or delete the item later.
-    return _toWishItem(item);
+    return _toWishItem(session, item);
   }
 
   /// Edits one of the caller's items.
@@ -171,7 +175,73 @@ class MyWishlistEndpoint extends Endpoint {
         updatedAt: DateTime.now(),
       ),
     );
-    return _toWishItem(updated);
+    return _toWishItem(session, updated);
+  }
+
+  /// Picture, step 1: where and how to upload it.
+  Future<ImageUpload> imageUpload(Session session, int itemId) async {
+    await _findMine(session, itemId); // only for my own items
+    final path = newImagePath(itemId); // chosen by the server, never the app
+    final description = await session.storage.createUploadDescription(
+      storageId: imageStorage,
+      path: path,
+      options: const UploadOptions(
+        maxFileSize: maxImageBytes,
+        expirationDuration: Duration(minutes: 10),
+        preventOverwrite: true,
+      ),
+    );
+    return ImageUpload(path: path, description: description);
+  }
+
+  /// Picture, step 2 (after the app uploaded the file): check it, attach it.
+  Future<WishItem> attachImage(Session session, int itemId, String path) async {
+    final item = await _findMine(session, itemId);
+    // `path` comes back from the app: accept only the shape we issue for
+    // this item, so nobody can attach someone else's file.
+    final expected = RegExp('^items/$itemId/[0-9a-f]{32}\$');
+    if (!expected.hasMatch(path) ||
+        !await session.storage.verifyUpload(
+          storageId: imageStorage,
+          path: path,
+        )) {
+      throw WishlistException(message: 'Image introuvable');
+    }
+
+    final data = await session.storage.retrieveFile(
+      storageId: imageStorage,
+      path: path,
+    );
+    final bytes = data.buffer.asUint8List(
+      data.offsetInBytes,
+      data.lengthInBytes,
+    );
+    if (bytes.length > maxImageBytes || !looksLikeImage(bytes)) {
+      await session.storage.deleteFile(storageId: imageStorage, path: path);
+      throw WishlistException(
+        message: 'Image invalide (JPEG, PNG ou WebP, 500 Ko maximum)',
+      );
+    }
+
+    await _deleteImageFile(session, item); // replace: drop the old file
+    final updated = await Item.db.updateRow(
+      session,
+      // A new picture is a meaningful edit: claimers get the "modifié" flag.
+      item.copyWith(imagePath: path, updatedAt: DateTime.now()),
+    );
+    return _toWishItem(session, updated);
+  }
+
+  /// Removes the picture of one of the caller's items.
+  Future<WishItem> removeImage(Session session, int itemId) async {
+    final item = await _findMine(session, itemId);
+    if (item.imagePath == null) return _toWishItem(session, item);
+    await _deleteImageFile(session, item);
+    final updated = await Item.db.updateRow(
+      session,
+      item.copyWith(imagePath: null, updatedAt: DateTime.now()),
+    );
+    return _toWishItem(session, updated);
   }
 
   /// Soft delete, so claimers see "removed by owner".
@@ -220,6 +290,17 @@ class MyWishlistEndpoint extends Endpoint {
     // no details, which is what we want for unexpected bugs.
     if (item == null) throw WishlistException(message: 'Article introuvable');
     return item;
+  }
+
+  /// Deletes the stored picture file of [item], if any.
+  //
+  // Soft-deleted items keep their picture on purpose: the claimer still sees
+  // the crossed-out item with it.
+  Future<void> _deleteImageFile(Session session, Item item) async {
+    final path = item.imagePath;
+    if (path != null) {
+      await session.storage.deleteFile(storageId: imageStorage, path: path);
+    }
   }
 
   /// Rejects invalid data coming from the client.
@@ -288,7 +369,9 @@ class MyWishlistEndpoint extends Endpoint {
 // step 4 adds claim data for OTHER people's lists, it will use a different
 // class and mapping. The owner's view can never include claim fields,
 // because WishItem does not have them.
-WishItem _toWishItem(Item item) => WishItem(
+//
+// Async because building the picture URL is.
+Future<WishItem> _toWishItem(Session session, Item item) async => WishItem(
   id: item.id,
   title: item.title,
   notes: item.notes,
@@ -296,4 +379,5 @@ WishItem _toWishItem(Item item) => WishItem(
   priceCents: item.priceCents,
   priority: item.priority,
   quantity: item.quantity,
+  imageUrl: await imageUrlOf(session, item),
 );

@@ -1,9 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:wishlist_client/wishlist_client.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../client.dart';
 import '../money.dart';
 import '../async_ui.dart';
+import 'family_item_tile.dart'; // ItemLeading
 import 'item_form_dialog.dart';
 
 /// The signed-in user's own list. No claim info here, by design: the server
@@ -23,20 +26,42 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
   void _reload() => setState(() => _items = client.myWishlist.list());
 
   Future<void> _add() async {
-    final item = await showItemForm(context);
-    if (item == null || !mounted) return;
-    if (await runAction(context, () => client.myWishlist.add(item)) &&
+    final result = await showItemForm(context);
+    if (result == null || !mounted) return;
+    if (await runAction(context, () async {
+          final saved = await client.myWishlist.add(result.item);
+          await _saveImage(saved.id!, result);
+        }) &&
         mounted) {
       _reload();
     }
   }
 
   Future<void> _edit(WishItem existing) async {
-    final item = await showItemForm(context, existing: existing);
-    if (item == null || !mounted) return;
-    if (await runAction(context, () => client.myWishlist.update(item)) &&
+    final result = await showItemForm(context, existing: existing);
+    if (result == null || !mounted) return;
+    if (await runAction(context, () async {
+          await client.myWishlist.update(result.item);
+          await _saveImage(existing.id!, result);
+        }) &&
         mounted) {
       _reload();
+    }
+  }
+
+  /// Uploads or removes the picture chosen in the form. Runs after the item
+  /// is saved, because a new item needs its id for the upload.
+  Future<void> _saveImage(int itemId, ItemFormResult result) async {
+    final bytes = result.newImage;
+    if (bytes != null) {
+      final upload = await client.myWishlist.imageUpload(itemId);
+      final ok = await FileUploader(
+        upload.description,
+      ).uploadByteData(ByteData.sublistView(bytes));
+      if (!ok) throw Exception('Upload failed'); // generic error snackbar
+      await client.myWishlist.attachImage(itemId, upload.path);
+    } else if (result.removeImage) {
+      await client.myWishlist.removeImage(itemId);
     }
   }
 
@@ -77,7 +102,10 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
         onRetry: _reload,
         emptyText: 'Liste vide, ajoutez un cadeau!',
         itemBuilder: (item) => ListTile(
-          leading: Text('★' * (4 - item.priority)), // 1 = ★★★
+          leading: ItemLeading(
+            imageUrl: item.imageUrl,
+            priority: item.priority,
+          ),
           title: Text(item.title),
           subtitle: _details(item),
           onTap: () => _edit(item),
@@ -105,6 +133,8 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
   /// "19.99 € · ×2 · size M", or null when there is nothing to show.
   Widget? _details(WishItem item) {
     final parts = [
+      // With a picture, the stars leave the leading slot: show them here.
+      if (item.imageUrl != null) '★' * (4 - item.priority),
       if (item.priceCents != null) formatPrice(item.priceCents!),
       if (item.quantity > 1) '×${item.quantity}',
       if (item.notes != null) item.notes!,

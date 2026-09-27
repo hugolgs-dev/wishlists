@@ -464,6 +464,72 @@ class Endpoints extends _is.EndpointDispatch {
                         params['input'],
                       ),
         ),
+        'imageUpload': _is.MethodConnector(
+          name: 'imageUpload',
+          params: {
+            'itemId': _is.ParameterDescription(
+              name: 'itemId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['myWishlist'] as _iznp1sn0.MyWishlistEndpoint)
+                      .imageUpload(
+                        session,
+                        params['itemId'],
+                      ),
+        ),
+        'attachImage': _is.MethodConnector(
+          name: 'attachImage',
+          params: {
+            'itemId': _is.ParameterDescription(
+              name: 'itemId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+            'path': _is.ParameterDescription(
+              name: 'path',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['myWishlist'] as _iznp1sn0.MyWishlistEndpoint)
+                      .attachImage(
+                        session,
+                        params['itemId'],
+                        params['path'],
+                      ),
+        ),
+        'removeImage': _is.MethodConnector(
+          name: 'removeImage',
+          params: {
+            'itemId': _is.ParameterDescription(
+              name: 'itemId',
+              type: _is.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['myWishlist'] as _iznp1sn0.MyWishlistEndpoint)
+                      .removeImage(
+                        session,
+                        params['itemId'],
+                      ),
+        ),
         'remove': _is.MethodConnector(
           name: 'remove',
           params: {

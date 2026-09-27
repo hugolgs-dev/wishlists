@@ -22,6 +22,9 @@ myWishlist:
   - list:
   - add:
   - update:
+  - imageUpload:
+  - attachImage:
+  - removeImage:
   - remove:
 profile:
   - getName:

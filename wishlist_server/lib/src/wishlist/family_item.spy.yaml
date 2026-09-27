@@ -11,6 +11,8 @@ fields:
   priceCents: int?
   priority: int
   quantity: int
+  ### Set by the server.
+  imageUrl: String?
   claims: List<ClaimInfo>
   ### The owner deleted it after the caller claimed it.
   removed: bool

@@ -19,6 +19,8 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
 import 'package:serverpod_test/serverpod_test.dart' as _ist;
 import 'package:wishlist_server/src/generated/wishlist/family_item.dart'
     as _inf99iy1;
+import 'package:wishlist_server/src/generated/wishlist/image_upload.dart'
+    as _ij07mujz;
 import 'package:wishlist_server/src/generated/wishlist/member.dart'
     as _io2wo9jc;
 import 'package:wishlist_server/src/generated/wishlist/wish_item.dart'
@@ -848,6 +850,103 @@ class _MyWishlistEndpoint {
           endpointPath: 'myWishlist',
           methodName: 'update',
           parameters: _ist.testObjectToJson({'input': input}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_iqkmgcxp.WishItem>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_ij07mujz.ImageUpload> imageUpload(
+    _ist.TestSessionBuilder sessionBuilder,
+    int itemId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'myWishlist',
+            method: 'imageUpload',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'myWishlist',
+          methodName: 'imageUpload',
+          parameters: _ist.testObjectToJson({'itemId': itemId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_ij07mujz.ImageUpload>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_iqkmgcxp.WishItem> attachImage(
+    _ist.TestSessionBuilder sessionBuilder,
+    int itemId,
+    String path,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'myWishlist',
+            method: 'attachImage',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'myWishlist',
+          methodName: 'attachImage',
+          parameters: _ist.testObjectToJson({
+            'itemId': itemId,
+            'path': path,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_iqkmgcxp.WishItem>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<_iqkmgcxp.WishItem> removeImage(
+    _ist.TestSessionBuilder sessionBuilder,
+    int itemId,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'myWishlist',
+            method: 'removeImage',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'myWishlist',
+          methodName: 'removeImage',
+          parameters: _ist.testObjectToJson({'itemId': itemId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =

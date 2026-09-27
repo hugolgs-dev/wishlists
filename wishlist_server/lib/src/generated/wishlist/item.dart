@@ -27,6 +27,7 @@ abstract class Item implements _is.TableRow<int?>, _is.ProtocolSerialization {
     bool? isGroupGift,
     this.organizerId,
     this.imageUrl,
+    this.imagePath,
     this.previewTitle,
     this.previewFetchedAt,
     this.receivedAt,
@@ -53,6 +54,7 @@ abstract class Item implements _is.TableRow<int?>, _is.ProtocolSerialization {
     bool? isGroupGift,
     _is.UuidValue? organizerId,
     String? imageUrl,
+    String? imagePath,
     String? previewTitle,
     DateTime? previewFetchedAt,
     DateTime? receivedAt,
@@ -86,6 +88,7 @@ abstract class Item implements _is.TableRow<int?>, _is.ProtocolSerialization {
               jsonSerialization['organizerId'],
             ),
       imageUrl: jsonSerialization['imageUrl'] as String?,
+      imagePath: jsonSerialization['imagePath'] as String?,
       previewTitle: jsonSerialization['previewTitle'] as String?,
       previewFetchedAt: jsonSerialization['previewFetchedAt'] == null
           ? null
@@ -141,6 +144,10 @@ abstract class Item implements _is.TableRow<int?>, _is.ProtocolSerialization {
 
   String? imageUrl;
 
+  /// Uploaded picture: a path in the 'public' storage, not a URL, so a change
+  /// of domain doesn't break it. (imageUrl stays for future link previews.)
+  String? imagePath;
+
   String? previewTitle;
 
   DateTime? previewFetchedAt;
@@ -174,6 +181,7 @@ abstract class Item implements _is.TableRow<int?>, _is.ProtocolSerialization {
     bool? isGroupGift,
     _is.UuidValue? organizerId,
     String? imageUrl,
+    String? imagePath,
     String? previewTitle,
     DateTime? previewFetchedAt,
     DateTime? receivedAt,
@@ -198,6 +206,7 @@ abstract class Item implements _is.TableRow<int?>, _is.ProtocolSerialization {
       'isGroupGift': isGroupGift,
       if (organizerId != null) 'organizerId': organizerId?.toJson(),
       if (imageUrl != null) 'imageUrl': imageUrl,
+      if (imagePath != null) 'imagePath': imagePath,
       if (previewTitle != null) 'previewTitle': previewTitle,
       if (previewFetchedAt != null)
         'previewFetchedAt': previewFetchedAt?.toJson(),
@@ -258,6 +267,7 @@ class _ItemImpl extends Item {
     bool? isGroupGift,
     _is.UuidValue? organizerId,
     String? imageUrl,
+    String? imagePath,
     String? previewTitle,
     DateTime? previewFetchedAt,
     DateTime? receivedAt,
@@ -278,6 +288,7 @@ class _ItemImpl extends Item {
          isGroupGift: isGroupGift,
          organizerId: organizerId,
          imageUrl: imageUrl,
+         imagePath: imagePath,
          previewTitle: previewTitle,
          previewFetchedAt: previewFetchedAt,
          receivedAt: receivedAt,
@@ -304,6 +315,7 @@ class _ItemImpl extends Item {
     bool? isGroupGift,
     Object? organizerId = _Undefined,
     Object? imageUrl = _Undefined,
+    Object? imagePath = _Undefined,
     Object? previewTitle = _Undefined,
     Object? previewFetchedAt = _Undefined,
     Object? receivedAt = _Undefined,
@@ -327,6 +339,7 @@ class _ItemImpl extends Item {
           ? organizerId
           : this.organizerId,
       imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
+      imagePath: imagePath is String? ? imagePath : this.imagePath,
       previewTitle: previewTitle is String? ? previewTitle : this.previewTitle,
       previewFetchedAt: previewFetchedAt is DateTime?
           ? previewFetchedAt
@@ -404,6 +417,11 @@ class ItemUpdateTable extends _is.UpdateTable<ItemTable> {
 
   _is.ColumnValue<String, String> imageUrl(String? value) => _is.ColumnValue(
     table.imageUrl,
+    value,
+  );
+
+  _is.ColumnValue<String, String> imagePath(String? value) => _is.ColumnValue(
+    table.imagePath,
     value,
   );
 
@@ -498,6 +516,10 @@ class ItemTable extends _is.Table<int?> {
       'imageUrl',
       this,
     );
+    imagePath = _is.ColumnString(
+      'imagePath',
+      this,
+    );
     previewTitle = _is.ColumnString(
       'previewTitle',
       this,
@@ -555,6 +577,10 @@ class ItemTable extends _is.Table<int?> {
 
   late final _is.ColumnString imageUrl;
 
+  /// Uploaded picture: a path in the 'public' storage, not a URL, so a change
+  /// of domain doesn't break it. (imageUrl stays for future link previews.)
+  late final _is.ColumnString imagePath;
+
   late final _is.ColumnString previewTitle;
 
   late final _is.ColumnDateTime previewFetchedAt;
@@ -583,6 +609,7 @@ class ItemTable extends _is.Table<int?> {
     isGroupGift,
     organizerId,
     imageUrl,
+    imagePath,
     previewTitle,
     previewFetchedAt,
     receivedAt,

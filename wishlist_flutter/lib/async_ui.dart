@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:wishlist_client/wishlist_client.dart';
 
+/// Bumped to make every visible list reload (refresh button, app resume).
+///
+/// Lists reload IN PLACE: screens are never rebuilt from scratch, so a dialog
+/// that is open at that moment (e.g. the item form while picking a photo)
+/// can still hand its result back to its screen.
+final refreshSignal = ValueNotifier(0);
+
+void requestRefresh() => refreshSignal.value++;
+
 /// Shows a spinner, an error with retry, an empty message, or the list.
-/// Pull down to refresh.
-class AsyncList<T> extends StatelessWidget {
+/// Pull down to refresh. Also reloads on [requestRefresh].
+class AsyncList<T> extends StatefulWidget {
   const AsyncList({
     super.key,
     required this.future,
@@ -18,9 +27,33 @@ class AsyncList<T> extends StatelessWidget {
   final Widget Function(T item) itemBuilder;
 
   @override
+  State<AsyncList<T>> createState() => _AsyncListState<T>();
+}
+
+class _AsyncListState<T> extends State<AsyncList<T>> {
+  @override
+  void initState() {
+    super.initState();
+    refreshSignal.addListener(_onRefresh);
+  }
+
+  @override
+  void dispose() {
+    refreshSignal.removeListener(_onRefresh); // no calls once the list is gone
+    super.dispose();
+  }
+
+  // Asks the screen to reload. FutureBuilder keeps showing the previous data
+  // meanwhile: no spinner flash, and the scroll position stays.
+  void _onRefresh() => widget.onRetry();
+
+  @override
   Widget build(BuildContext context) {
+    final onRetry = widget.onRetry;
+    final emptyText = widget.emptyText;
+    final itemBuilder = widget.itemBuilder;
     return FutureBuilder<List<T>>(
-      future: future,
+      future: widget.future,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(

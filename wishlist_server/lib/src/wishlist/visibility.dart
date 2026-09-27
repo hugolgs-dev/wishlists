@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 
 import '../generated/protocol.dart';
+import 'images.dart';
 
 // =============================================================================
 // THE visibility policy (ROADMAP "Core visibility rule"). Every endpoint that
@@ -52,6 +53,9 @@ Future<List<FamilyItem>> toFamilyItems(
     for (final i in visible) i.ownerId,
     for (final c in claims) c.claimerId,
   });
+  final imageUrls = {
+    for (final i in visible) i.id!: await imageUrlOf(session, i),
+  };
 
   return [
     for (final item in visible)
@@ -60,6 +64,7 @@ Future<List<FamilyItem>> toFamilyItems(
         claims.where((c) => c.itemId == item.id).toList(),
         names,
         me,
+        imageUrls[item.id],
       ),
   ];
 }
@@ -73,6 +78,7 @@ FamilyItem _toFamilyItem(
   List<Claim> itemClaims,
   Map<UuidValue, String> names,
   UuidValue me,
+  String? imageUrl,
 ) {
   final mine = itemClaims.where((c) => c.claimerId == me).firstOrNull;
   return FamilyItem(
@@ -85,6 +91,7 @@ FamilyItem _toFamilyItem(
     priceCents: item.priceCents,
     priority: item.priority,
     quantity: item.quantity,
+    imageUrl: imageUrl,
     claims: [
       for (final c in itemClaims)
         ClaimInfo(

@@ -22,18 +22,15 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   var _tab = 0;
 
-  /// Bumping this rebuilds the current tab from scratch, which reloads it.
-  var _refreshCount = 0;
   late final AppLifecycleListener _lifecycle;
-
-  void _refresh() => setState(() => _refreshCount++);
 
   @override
   void initState() {
     super.initState();
-    // Coming back to the app (other tab, phone unlocked...): other people may
-    // have changed things meanwhile.
-    _lifecycle = AppLifecycleListener(onResume: _refresh);
+    // Coming back to the app (other tab, phone unlocked, photo picker
+    // closed...): other people may have changed things meanwhile. Lists
+    // reload in place (see refreshSignal), so an open form is not lost.
+    _lifecycle = AppLifecycleListener(onResume: requestRefresh);
     _askNameIfMissing();
   }
 
@@ -54,7 +51,7 @@ class _HomeShellState extends State<HomeShell> {
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Actualiser',
-            onPressed: _refresh,
+            onPressed: requestRefresh,
           ),
           PopupMenuButton<_MenuAction>(
             onSelected: (action) => switch (action) {
@@ -76,14 +73,11 @@ class _HomeShellState extends State<HomeShell> {
           ),
         ],
       ),
-      body: KeyedSubtree(
-        key: ValueKey(_refreshCount),
-        child: switch (_tab) {
-          0 => const MyWishlistScreen(),
-          1 => const FamilyScreen(),
-          _ => const MyClaimsScreen(),
-        },
-      ),
+      body: switch (_tab) {
+        0 => const MyWishlistScreen(),
+        1 => const FamilyScreen(),
+        _ => const MyClaimsScreen(),
+      },
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tab,
         onDestinationSelected: (i) => setState(() => _tab = i),

@@ -19,6 +19,8 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
 import 'package:wishlist_client/src/protocol/wishlist/family_item.dart'
     as _i4nr5t9w;
+import 'package:wishlist_client/src/protocol/wishlist/image_upload.dart'
+    as _ihd0xrfp;
 import 'package:wishlist_client/src/protocol/wishlist/member.dart' as _ifww57pp;
 import 'package:wishlist_client/src/protocol/wishlist/wish_item.dart'
     as _im9ilsxq;
@@ -353,6 +355,35 @@ class EndpointMyWishlist extends _isc.EndpointRef {
         'myWishlist',
         'update',
         {'input': input},
+      );
+
+  /// Picture, step 1: where and how to upload it.
+  _ida.Future<_ihd0xrfp.ImageUpload> imageUpload(int itemId) =>
+      caller.callServerEndpoint<_ihd0xrfp.ImageUpload>(
+        'myWishlist',
+        'imageUpload',
+        {'itemId': itemId},
+      );
+
+  /// Picture, step 2 (after the app uploaded the file): check it, attach it.
+  _ida.Future<_im9ilsxq.WishItem> attachImage(
+    int itemId,
+    String path,
+  ) => caller.callServerEndpoint<_im9ilsxq.WishItem>(
+    'myWishlist',
+    'attachImage',
+    {
+      'itemId': itemId,
+      'path': path,
+    },
+  );
+
+  /// Removes the picture of one of the caller's items.
+  _ida.Future<_im9ilsxq.WishItem> removeImage(int itemId) =>
+      caller.callServerEndpoint<_im9ilsxq.WishItem>(
+        'myWishlist',
+        'removeImage',
+        {'itemId': itemId},
       );
 
   /// Soft delete, so claimers see "removed by owner".

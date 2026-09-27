@@ -1,0 +1,7 @@
+### What the app needs to upload an item picture.
+class: ImageUpload
+fields:
+  ### Where the file will be stored. Sent back to attachImage.
+  path: String
+  ### Opaque upload instructions, for the client's FileUploader.
+  description: String

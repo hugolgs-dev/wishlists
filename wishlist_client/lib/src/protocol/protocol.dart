@@ -24,12 +24,14 @@ import 'package:wishlist_client/src/protocol/wishlist/wish_item.dart'
 import 'wishlist/claim_info.dart' as _i5vb2x69;
 import 'wishlist/event.dart' as _ixszj4no;
 import 'wishlist/family_item.dart' as _ireitver;
+import 'wishlist/image_upload.dart' as _ixmrjlij;
 import 'wishlist/member.dart' as _if4kafv0;
 import 'wishlist/wish_item.dart' as _ivqpbph4;
 import 'wishlist/wishlist_exception.dart' as _izf7jqgv;
 export 'wishlist/claim_info.dart';
 export 'wishlist/event.dart';
 export 'wishlist/family_item.dart';
+export 'wishlist/image_upload.dart';
 export 'wishlist/member.dart';
 export 'wishlist/wish_item.dart';
 export 'wishlist/wishlist_exception.dart';
@@ -78,6 +80,9 @@ class Protocol extends _isc.SerializationManager {
     if (t == _ireitver.FamilyItem) {
       return _ireitver.FamilyItem.fromJson(data) as T;
     }
+    if (t == _ixmrjlij.ImageUpload) {
+      return _ixmrjlij.ImageUpload.fromJson(data) as T;
+    }
     if (t == _if4kafv0.Member) {
       return _if4kafv0.Member.fromJson(data) as T;
     }
@@ -95,6 +100,9 @@ class Protocol extends _isc.SerializationManager {
     }
     if (t == _isc.getType<_ireitver.FamilyItem?>()) {
       return (data != null ? _ireitver.FamilyItem.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ixmrjlij.ImageUpload?>()) {
+      return (data != null ? _ixmrjlij.ImageUpload.fromJson(data) : null) as T;
     }
     if (t == _isc.getType<_if4kafv0.Member?>()) {
       return (data != null ? _if4kafv0.Member.fromJson(data) : null) as T;
@@ -144,6 +152,7 @@ class Protocol extends _isc.SerializationManager {
       _i5vb2x69.ClaimInfo => 'ClaimInfo',
       _ixszj4no.Event => 'Event',
       _ireitver.FamilyItem => 'FamilyItem',
+      _ixmrjlij.ImageUpload => 'ImageUpload',
       _if4kafv0.Member => 'Member',
       _ivqpbph4.WishItem => 'WishItem',
       _izf7jqgv.WishlistException => 'WishlistException',
@@ -167,6 +176,8 @@ class Protocol extends _isc.SerializationManager {
         return 'Event';
       case _ireitver.FamilyItem():
         return 'FamilyItem';
+      case _ixmrjlij.ImageUpload():
+        return 'ImageUpload';
       case _if4kafv0.Member():
         return 'Member';
       case _ivqpbph4.WishItem():
@@ -203,6 +214,9 @@ class Protocol extends _isc.SerializationManager {
     }
     if (dataClassName == 'FamilyItem') {
       return deserialize<_ireitver.FamilyItem>(data['data']);
+    }
+    if (dataClassName == 'ImageUpload') {
+      return deserialize<_ixmrjlij.ImageUpload>(data['data']);
     }
     if (dataClassName == 'Member') {
       return deserialize<_if4kafv0.Member>(data['data']);

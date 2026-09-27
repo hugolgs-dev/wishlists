@@ -27,6 +27,7 @@ import 'wishlist/claim.dart' as _i72ohhd2;
 import 'wishlist/claim_info.dart' as _i5vb2x69;
 import 'wishlist/event.dart' as _ixszj4no;
 import 'wishlist/family_item.dart' as _ireitver;
+import 'wishlist/image_upload.dart' as _ixmrjlij;
 import 'wishlist/item.dart' as _i2vbrl2l;
 import 'wishlist/member.dart' as _if4kafv0;
 import 'wishlist/wish_item.dart' as _ivqpbph4;
@@ -35,6 +36,7 @@ export 'wishlist/claim.dart';
 export 'wishlist/claim_info.dart';
 export 'wishlist/event.dart';
 export 'wishlist/family_item.dart';
+export 'wishlist/image_upload.dart';
 export 'wishlist/item.dart';
 export 'wishlist/member.dart';
 export 'wishlist/wish_item.dart';
@@ -277,6 +279,12 @@ class Protocol extends _is.DatabaseSerializationManager {
           dartType: 'String?',
         ),
         _isp.ColumnDefinition(
+          name: 'imagePath',
+          columnType: _isp.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _isp.ColumnDefinition(
           name: 'previewTitle',
           columnType: _isp.ColumnType.text,
           isNullable: true,
@@ -422,6 +430,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == _ireitver.FamilyItem) {
       return _ireitver.FamilyItem.fromJson(data) as T;
     }
+    if (t == _ixmrjlij.ImageUpload) {
+      return _ixmrjlij.ImageUpload.fromJson(data) as T;
+    }
     if (t == _i2vbrl2l.Item) {
       return _i2vbrl2l.Item.fromJson(data) as T;
     }
@@ -445,6 +456,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (t == _is.getType<_ireitver.FamilyItem?>()) {
       return (data != null ? _ireitver.FamilyItem.fromJson(data) : null) as T;
+    }
+    if (t == _is.getType<_ixmrjlij.ImageUpload?>()) {
+      return (data != null ? _ixmrjlij.ImageUpload.fromJson(data) : null) as T;
     }
     if (t == _is.getType<_i2vbrl2l.Item?>()) {
       return (data != null ? _i2vbrl2l.Item.fromJson(data) : null) as T;
@@ -501,6 +515,7 @@ class Protocol extends _is.DatabaseSerializationManager {
       _i5vb2x69.ClaimInfo => 'ClaimInfo',
       _ixszj4no.Event => 'Event',
       _ireitver.FamilyItem => 'FamilyItem',
+      _ixmrjlij.ImageUpload => 'ImageUpload',
       _i2vbrl2l.Item => 'Item',
       _if4kafv0.Member => 'Member',
       _ivqpbph4.WishItem => 'WishItem',
@@ -527,6 +542,8 @@ class Protocol extends _is.DatabaseSerializationManager {
         return 'Event';
       case _ireitver.FamilyItem():
         return 'FamilyItem';
+      case _ixmrjlij.ImageUpload():
+        return 'ImageUpload';
       case _i2vbrl2l.Item():
         return 'Item';
       case _if4kafv0.Member():
@@ -572,6 +589,9 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (dataClassName == 'FamilyItem') {
       return deserialize<_ireitver.FamilyItem>(data['data']);
+    }
+    if (dataClassName == 'ImageUpload') {
+      return deserialize<_ixmrjlij.ImageUpload>(data['data']);
     }
     if (dataClassName == 'Item') {
       return deserialize<_i2vbrl2l.Item>(data['data']);

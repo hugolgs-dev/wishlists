@@ -7,3 +7,5 @@ fields:
   priceCents: int?
   priority: int, default=2
   quantity: int, default=1
+  ### Set by the server. Ignored when the app sends it back.
+  imageUrl: String?

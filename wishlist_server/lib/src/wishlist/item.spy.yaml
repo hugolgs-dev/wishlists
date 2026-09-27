@@ -17,6 +17,9 @@ fields:
   isGroupGift: bool, default=false
   organizerId: UuidValue?, relation(parent=serverpod_auth_core_user, onDelete=SetNull)
   imageUrl: String?
+  ### Uploaded picture: a path in the 'public' storage, not a URL, so a change
+  ### of domain doesn't break it. (imageUrl stays for future link previews.)
+  imagePath: String?
   previewTitle: String?
   previewFetchedAt: DateTime?
   receivedAt: DateTime?

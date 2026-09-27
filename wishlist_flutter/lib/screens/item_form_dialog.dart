@@ -1,15 +1,29 @@
+import 'package:flutter/foundation.dart'; // Uint8List
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:wishlist_client/wishlist_client.dart';
 
 import '../money.dart';
+import 'family_item_tile.dart'; // showImageViewer
 
-/// Opens the add/edit form. Returns the filled item, or null if cancelled.
+/// What the form returns: the item, plus what to do with its picture.
+typedef ItemFormResult = ({
+  WishItem item,
+  Uint8List? newImage,
+  bool removeImage,
+});
+
+const _maxImageBytes = 512 * 1024; // same limit as the server
+
+/// Opens the add/edit form. Returns the result, or null if cancelled.
 /// Pass [existing] to edit: the result keeps its id.
-Future<WishItem?> showItemForm(BuildContext context, {WishItem? existing}) =>
-    showDialog<WishItem>(
-      context: context,
-      builder: (_) => _ItemFormDialog(existing: existing),
-    );
+Future<ItemFormResult?> showItemForm(
+  BuildContext context, {
+  WishItem? existing,
+}) => showDialog<ItemFormResult>(
+  context: context,
+  builder: (_) => _ItemFormDialog(existing: existing),
+);
 
 class _ItemFormDialog extends StatefulWidget {
   const _ItemFormDialog({this.existing});
@@ -36,6 +50,47 @@ class _ItemFormDialogState extends State<_ItemFormDialog> {
   );
   late var _priority = widget.existing?.priority ?? 2;
 
+  Uint8List? _newImage; // picked in this dialog, not uploaded yet
+  var _removeImage = false;
+  final _canUseCamera = ImagePicker().supportsImageSource(ImageSource.camera);
+
+  Future<void> _pickImage(ImageSource source) async {
+    final file = await ImagePicker().pickImage(
+      source: source,
+      maxWidth: 1024, // resized on the phone: smaller upload, faster lists
+      maxHeight: 1024,
+      imageQuality: 80,
+    );
+    if (file == null) return; // cancelled
+    final bytes = await file.readAsBytes();
+    if (!mounted) return;
+    if (bytes.length > _maxImageBytes) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Image trop lourde (500 Ko maximum)')),
+      );
+      return;
+    }
+    setState(() {
+      _newImage = bytes;
+      _removeImage = false;
+    });
+  }
+
+  /// The preview: new picture, else the current one, else nothing.
+  /// Tap to see it full-screen (current picture only).
+  Widget? _preview() {
+    final picked = _newImage;
+    if (picked != null) return Image.memory(picked, height: 120);
+    final url = widget.existing?.imageUrl;
+    if (url != null && !_removeImage) {
+      return GestureDetector(
+        onTap: () => showImageViewer(context, url),
+        child: Image.network(url, height: 120),
+      );
+    }
+    return null;
+  }
+
   @override
   void dispose() {
     // Controllers hold resources: always dispose them with the widget.
@@ -48,9 +103,8 @@ class _ItemFormDialogState extends State<_ItemFormDialog> {
   void _save() {
     // Runs every `validator` below; stops if one returns an error message.
     if (!_formKey.currentState!.validate()) return;
-    Navigator.pop(
-      context,
-      WishItem(
+    final ItemFormResult result = (
+      item: WishItem(
         id: widget.existing?.id,
         title: _title.text.trim(),
         url: _emptyToNull(_url.text),
@@ -59,7 +113,10 @@ class _ItemFormDialogState extends State<_ItemFormDialog> {
         priority: _priority,
         quantity: int.parse(_quantity.text),
       ),
+      newImage: _newImage,
+      removeImage: _removeImage,
     );
+    Navigator.pop(context, result);
   }
 
   @override
@@ -130,6 +187,35 @@ class _ItemFormDialogState extends State<_ItemFormDialog> {
                 ],
                 selected: {_priority},
                 onSelectionChanged: (s) => setState(() => _priority = s.first),
+              ),
+              const SizedBox(height: 16),
+              // `?` before an element: added only when it isn't null.
+              ?_preview(),
+              // Wrap instead of Row: moves buttons to a new line in a narrow
+              // dialog instead of overflowing.
+              Wrap(
+                alignment: WrapAlignment.center,
+                children: [
+                  TextButton.icon(
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    icon: const Icon(Icons.photo),
+                    label: const Text('Galerie'),
+                  ),
+                  if (_canUseCamera)
+                    TextButton.icon(
+                      onPressed: () => _pickImage(ImageSource.camera),
+                      icon: const Icon(Icons.photo_camera),
+                      label: const Text('Appareil photo'),
+                    ),
+                  if (_preview() != null)
+                    TextButton(
+                      onPressed: () => setState(() {
+                        _newImage = null;
+                        _removeImage = true;
+                      }),
+                      child: const Text('Retirer'),
+                    ),
+                ],
               ),
             ],
           ),
