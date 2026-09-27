@@ -43,15 +43,41 @@ dev_dependencies:
   # Used for agents to drive the app through the Dart MCP
   flutter_driver:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.4
   flutter_lints: '>=3.0.0 <7.0.0'
+  flutter_native_splash: ^2.4.8
   flutter_test:
     sdk: flutter
 
 dependency_overrides:
   flutter_secure_storage: ^10.0.0
 
+flutter_launcher_icons:
+  android: true
+  ios: false # no native iOS app: iPhone uses the web version
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#C62828"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#C62828"
+    theme_color: "#C62828"
+
+flutter_native_splash:
+  color: "#C62828"
+  image: assets/icon/icon_foreground.png
+  android_12:
+    color: "#C62828"
+    image: assets/icon/icon_foreground.png
+  ios: false
+  web: true
+
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+
 
 # The following section is specific to Flutter.
 flutter:
