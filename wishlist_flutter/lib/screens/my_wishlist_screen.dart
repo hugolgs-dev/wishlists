@@ -28,25 +28,53 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
   Future<void> _add() async {
     final result = await showItemForm(context);
     if (result == null || !mounted) return;
-    if (await runAction(context, () async {
-          final saved = await client.myWishlist.add(result.item);
-          await _saveImage(saved.id!, result);
-        }) &&
-        mounted) {
-      _reload();
+    final hasImage = result.newImage != null;
+
+    WishItem? saved;
+    final added = await runAction(
+      context,
+      () async => saved = await client.myWishlist.add(result.item),
+      // With a photo, wait for step 2 to confirm everything at once.
+      success: hasImage ? null : 'Cadeau ajouté',
+    );
+    if (!added || !mounted) return;
+
+    if (hasImage) {
+      await runAction(
+        context,
+        () => _saveImage(saved!.id!, result),
+        success: 'Cadeau ajouté avec sa photo',
+        failure: "Cadeau ajouté, mais la photo n'a pas pu être envoyée",
+      );
     }
+    if (mounted) _reload(); // the item exists either way
   }
 
   Future<void> _edit(WishItem existing) async {
     final result = await showItemForm(context, existing: existing);
     if (result == null || !mounted) return;
-    if (await runAction(context, () async {
-          await client.myWishlist.update(result.item);
-          await _saveImage(existing.id!, result);
-        }) &&
-        mounted) {
-      _reload();
+    final imageChange = result.newImage != null
+        ? 'photo ajoutée'
+        : result.removeImage
+        ? 'photo retirée'
+        : null;
+
+    final updated = await runAction(
+      context,
+      () => client.myWishlist.update(result.item),
+      success: imageChange == null ? 'Cadeau modifié' : null,
+    );
+    if (!updated || !mounted) return;
+
+    if (imageChange != null) {
+      await runAction(
+        context,
+        () => _saveImage(existing.id!, result),
+        success: 'Cadeau modifié, $imageChange',
+        failure: "Cadeau modifié, mais la photo n'a pas pu être mise à jour",
+      );
     }
+    if (mounted) _reload();
   }
 
   /// Uploads or removes the picture chosen in the form. Runs after the item
@@ -83,7 +111,11 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
       ),
     );
     if (confirmed != true || !mounted) return;
-    if (await runAction(context, () => client.myWishlist.remove(item.id!)) &&
+    if (await runAction(
+          context,
+          () => client.myWishlist.remove(item.id!),
+          success: 'Cadeau supprimé',
+        ) &&
         mounted) {
       _reload();
     }

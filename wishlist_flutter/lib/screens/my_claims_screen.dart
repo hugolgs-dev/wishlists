@@ -39,7 +39,11 @@ class _MyClaimsScreenState extends State<MyClaimsScreen> {
   }
 
   Future<void> _unclaim(FamilyItem item) async {
-    if (await runAction(context, () => client.claims.unclaim(item.id)) &&
+    if (await runAction(
+          context,
+          () => client.claims.unclaim(item.id),
+          success: 'Réservation retirée',
+        ) &&
         mounted) {
       _reload();
     }

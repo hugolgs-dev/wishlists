@@ -91,23 +91,36 @@ class _AsyncListState<T> extends State<AsyncList<T>> {
   }
 }
 
-/// Runs a server call. On failure shows the WishlistException message, or a
-/// generic one for anything else. Returns true on success.
+/// Runs a server call. On success shows [success] (if given). On failure
+/// shows the WishlistException message, or [failure] (default: a generic
+/// message) for anything else. Returns true on success.
 Future<bool> runAction(
   BuildContext context,
-  Future<void> Function() action,
-) async {
+  Future<void> Function() action, {
+  String? success,
+  String? failure,
+}) async {
   // Grab the messenger BEFORE the await: after it, `context` may belong to
   // a screen that was closed in the meantime.
   final messenger = ScaffoldMessenger.of(context);
+
+  void show(String text, Duration duration) {
+    messenger
+      // Replace the current message instead of queueing behind it.
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(text), duration: duration));
+  }
+
   try {
     await action();
+    if (success != null) show(success, const Duration(seconds: 2));
     return true;
   } on WishlistException catch (e) {
-    messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    show(e.message, const Duration(seconds: 4));
   } catch (_) {
-    messenger.showSnackBar(
-      const SnackBar(content: Text('Une erreur est survenue, réessayez')),
+    show(
+      failure ?? 'Une erreur est survenue, réessayez',
+      const Duration(seconds: 4),
     );
   }
   return false;

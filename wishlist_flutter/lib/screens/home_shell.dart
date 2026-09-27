@@ -126,7 +126,13 @@ class _HomeShellState extends State<HomeShell> {
         canCancel: canCancel,
       );
       if (name == null || !mounted) return;
-      if (await runAction(context, () => client.profile.setName(name))) return;
+      if (await runAction(
+        context,
+        () => client.profile.setName(name),
+        success: 'Prénom enregistré',
+      )) {
+        return;
+      }
     }
   }
 

@@ -30,6 +30,7 @@ class _PersonListScreenState extends State<PersonListScreen> {
     if (await runAction(
           context,
           () => client.claims.claim(item.id, quantity),
+          success: '« ${item.title} » réservé',
         ) &&
         mounted) {
       _reload();
@@ -37,7 +38,11 @@ class _PersonListScreenState extends State<PersonListScreen> {
   }
 
   Future<void> _unclaim(FamilyItem item) async {
-    if (await runAction(context, () => client.claims.unclaim(item.id)) &&
+    if (await runAction(
+          context,
+          () => client.claims.unclaim(item.id),
+          success: 'Réservation annulée',
+        ) &&
         mounted) {
       _reload();
     }
