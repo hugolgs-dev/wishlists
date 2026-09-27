@@ -23,7 +23,9 @@ class _MyWishlistScreenState extends State<MyWishlistScreen> {
   // runs, then the list or an error. Reloading = replacing this future.
   late Future<List<WishItem>> _items = client.myWishlist.list();
 
-  void _reload() => setState(() => _items = client.myWishlist.list());
+  void _reload() => setState(() {
+    _items = client.myWishlist.list();
+  });
 
   Future<void> _add() async {
     final result = await showItemForm(context);

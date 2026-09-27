@@ -26,7 +26,9 @@ class _MyClaimsScreenState extends State<MyClaimsScreen> {
     );
   }
 
-  void _reload() => setState(() => _items = _load());
+  void _reload() => setState(() {
+    _items = _load();
+  });
 
   Future<void> _setPurchased(FamilyItem item, bool purchased) async {
     if (await runAction(

@@ -15,7 +15,9 @@ class FamilyScreen extends StatefulWidget {
 class _FamilyScreenState extends State<FamilyScreen> {
   late Future<List<Member>> _members = client.family.members();
 
-  void _reload() => setState(() => _members = client.family.members());
+  void _reload() => setState(() {
+    _members = client.family.members();
+  });
 
   @override
   Widget build(BuildContext context) {

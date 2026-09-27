@@ -51,7 +51,17 @@ class _HomeShellState extends State<HomeShell> {
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Actualiser',
-            onPressed: requestRefresh,
+            onPressed: () {
+              requestRefresh();
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  const SnackBar(
+                    content: Text('Liste actualisée'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+            },
           ),
           PopupMenuButton<_MenuAction>(
             onSelected: (action) => switch (action) {

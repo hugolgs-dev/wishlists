@@ -19,7 +19,9 @@ class _PersonListScreenState extends State<PersonListScreen> {
 
   Future<List<FamilyItem>> _load() => client.family.list(widget.member.userId);
 
-  void _reload() => setState(() => _items = _load());
+  void _reload() => setState(() {
+    _items = _load();
+  });
 
   Future<void> _claim(FamilyItem item) async {
     // Only ask "how many?" when there is a choice.
@@ -86,7 +88,26 @@ class _PersonListScreenState extends State<PersonListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Liste de ${widget.member.name}')),
+      appBar: AppBar(
+        title: Text('Liste de ${widget.member.name}'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Actualiser',
+            onPressed: () {
+              _reload();
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  const SnackBar(
+                    content: Text('Liste actualisée'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+            },
+          ),
+        ],
+      ),
       body: AsyncList(
         future: _items,
         onRetry: _reload,
